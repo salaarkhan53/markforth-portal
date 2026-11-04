@@ -1221,3 +1221,30 @@ a.primary,a.secondary{display:inline-flex;align-items:center;justify-content:cen
   .ph-slashes{opacity:.5;top:16px}
   .hero-tools .notification-tools{justify-content:flex-start}
 }
+
+/* ================= Compact login: fits one screen on laptops and desktops ================= */
+.auth-shell{height:100vh;height:100dvh;min-height:600px}
+.auth-story{gap:clamp(10px,2.6vh,40px);padding:clamp(22px,4.5vh,56px) clamp(32px,4vw,56px)}
+.auth-story-logo{width:clamp(150px,20vh,190px)}
+.auth-story-copy{gap:clamp(10px,2.2vh,24px)}
+.auth-word{font-size:clamp(36px,min(5.2vw,8.2vh),84px)}
+.auth-story-lede{font-size:clamp(14.5px,2vh,17px)}
+.auth-trust{gap:clamp(5px,1.1vh,12px);padding-top:clamp(10px,2.2vh,22px);font-size:clamp(13px,1.8vh,14.5px)}
+.auth-emblem{top:clamp(28px,6vh,64px);width:min(340px,30vw,38vh)}
+.auth-slashes{bottom:clamp(110px,19vh,210px)}
+.auth-main{overflow-y:auto;place-items:center;padding:clamp(14px,3.5vh,48px) clamp(20px,5vw,64px)}
+.auth-card h1{font-size:clamp(26px,4vh,40px)}
+.auth-eyebrow{margin-bottom:6px}
+.auth-lede{margin:6px 0 clamp(12px,2.4vh,26px);font-size:clamp(14px,1.9vh,15.5px)}
+.auth-card form{gap:clamp(10px,1.7vh,18px)}
+.auth-field{gap:6px}
+.auth-control{min-height:clamp(44px,5.6vh,52px)}
+.auth-control input{height:clamp(42px,5.4vh,50px)}
+.auth-submit{min-height:clamp(44px,5.6vh,52px)}
+.demo-box{gap:10px;margin-bottom:clamp(10px,2vh,22px);padding:12px 14px}
+.demo-box p{font-size:14px}
+.demo-actions .auth-submit,.demo-actions .secondary{min-height:clamp(40px,5vh,48px)}
+.auth-notice{margin-bottom:clamp(10px,1.8vh,20px);padding:9px 14px;font-size:14px}
+.auth-help{margin-top:clamp(12px,2.2vh,28px);padding:10px 14px;font-size:13.5px}
+.auth-owner{margin-top:clamp(8px,1.4vh,20px)}
+@media (max-width:900px){.auth-shell{height:auto;min-height:100dvh}.auth-main{overflow:visible}}
