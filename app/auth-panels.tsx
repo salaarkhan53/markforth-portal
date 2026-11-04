@@ -68,6 +68,10 @@ export function AuthPanel(){
   const [touched,setTouched]=useState<{email?:boolean;password?:boolean}>({});
   const emailRef=useRef<HTMLInputElement>(null),passwordRef=useRef<HTMLInputElement>(null);
   useEffect(()=>{const r=new URLSearchParams(window.location.search).get('reason')||'';if(REASONS[r])setReason(r);},[]);
+  /* Demo copies (DEMO_MODE=1 on the server) offer one-click sample sign-ins. */
+  const [demo,setDemo]=useState(false),[demoBusy,setDemoBusy]=useState('');
+  useEffect(()=>{fetch('/api/demo').then(r=>r.ok?r.json():null).then((d:any)=>setDemo(!!d?.enabled)).catch(()=>{});},[]);
+  async function tryDemo(role:string){setDemoBusy(role);setError('');try{const r=await fetch('/api/demo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role})});if(!r.ok)throw Error('The demo could not start. Please try again.');window.location.assign('/');}catch(err:any){setError(err.message);setDemoBusy('');}}
 
   const emailError=!email.trim()?'Enter your email address.':!EMAIL.test(email.trim())?'Enter a valid email address, like name@markforthsol.com.':'';
   const passwordError=!forgot&&!password?'Enter your password.':'';
@@ -93,6 +97,7 @@ export function AuthPanel(){
         <p className="auth-eyebrow">Markforth agent portal</p>
         <h1>{forgot?'Reset your password':'Welcome back'}</h1>
         <p className="auth-lede">{forgot?'Enter the email you sign in with. If it belongs to an active account, we’ll email you a link to choose a new password.':'Sign in with the email and password your administrator set up for you.'}</p>
+        {demo&&!forgot&&<div className="demo-box"><p><b>This is a test copy with sample data.</b> Pick a role to look around. Nothing here is real, and changes may be reset.</p><div className="demo-actions"><button type="button" className="auth-submit" disabled={!!demoBusy} onClick={()=>tryDemo('admin')}>{demoBusy==='admin'?'Opening…':'Try as Admin'}</button><button type="button" className="secondary demo-agent" disabled={!!demoBusy} onClick={()=>tryDemo('agent')}>{demoBusy==='agent'?'Opening…':'Try as Agent'}</button></div></div>}
         {reason&&!forgot&&<Notice tone="info">{REASONS[reason]}</Notice>}
         <form onSubmit={submit} noValidate>
           <Field id="auth-email" label="Email address" icon={Mail} error={showEmailError?emailError:''}>
@@ -115,7 +120,7 @@ export function AuthPanel(){
         <div className="auth-help">
           <p><b>New here?</b> Your administrator creates your account and emails you a temporary password. You’ll choose your own password the first time you sign in.</p>
         </div>
-        <p className="auth-owner">Workspace owner? <a href="/signin-with-chatgpt?return_to=%2F" target="_top">Use owner access</a></p>
+        {!demo&&<p className="auth-owner">Workspace owner? <a href="/signin-with-chatgpt?return_to=%2F" target="_top">Use owner access</a></p>}
       </div>
     </main>
   </div>;

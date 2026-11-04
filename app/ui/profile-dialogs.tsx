@@ -63,6 +63,6 @@ export function ChangePasswordDialog({open,onClose,authSource}:{open:boolean;onC
     {authSource==='supabase'?<>
       <p className="profile-lede">Enter your current password, then choose a new one. Saving signs you out on your other devices.</p>
       <ChangePasswordForm key={String(open)} onDone={()=>{toast.success('Your password has been changed.');onClose();}}/>
-    </>:<div className="auth-notice is-info" role="status"><Info size={18} aria-hidden="true"/><div>You’re signed in with workspace-owner access, which doesn’t use a portal password. Sign in with your portal email and password to change it here.</div></div>}
+    </>:<div className="auth-notice is-info" role="status"><Info size={18} aria-hidden="true"/><div>{authSource==='demo'?'Demo accounts don’t have a password, so there’s nothing to change here. On the real portal, this is where you change yours.':'You’re signed in with workspace-owner access, which doesn’t use a portal password. Sign in with your portal email and password to change it here.'}</div></div>}
   </SimpleDialog>;
 }

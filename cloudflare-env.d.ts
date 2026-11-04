@@ -9,5 +9,7 @@ declare namespace Cloudflare {
     RESEND_API_KEY?: string;
     EMAIL_FROM?: string;
     BUCKET?: R2Bucket;
+    /** "1" only on a public demo copy. Never set on the live portal. */
+    DEMO_MODE?: string;
   }
 }

@@ -46,3 +46,15 @@ This build restyles the portal to match markforthsol.com, makes it easier for fi
 - `tests/idle.test.mjs` (new) covers the idle limit, the heartbeat, polling not extending a session, sessions with no timestamp, and the owner fallback.
 - `tests/auth.test.mjs` now also loads the new session pieces and checks the current-password rule.
 - `tests/portal.test.mjs` covers the self-service profile: own record only, name, date-of-birth and photo rules, and the origin check.
+
+## Public demo copy (sample data)
+
+A test copy runs at https://markforth-portal-demo.markforth.workers.dev with `DEMO_MODE=1`. The login page there offers **Try as Admin** / **Try as Agent**. The first demo sign-in fills an empty database with sample people, DIDs, leads, call totals and a power hour.
+
+- **Code:** `lib/demo.ts`, `app/api/demo/route.ts` and `tests/demo.test.mjs`. Demo sign-in is impossible unless `DEMO_MODE` is exactly `"1"`. **Never set it on the live portal.**
+- **Separate resources:** the demo has its own Cloudflare D1 database (`markforth-portal-demo`). It has no R2 bucket, so chat attachments show "File storage is not ready". It has no Supabase, so there are no password logins.
+- **To redeploy after changes:**
+  1. `pnpm run build`
+  2. Copy `dist/server/wrangler.json` to `dist/server/wrangler.demo.json`, then set `name` to `markforth-portal-demo`, point the D1 binding `DB` at the demo database id, remove `r2_buckets`, and set `vars` to `{"DEMO_MODE":"1"}`.
+  3. `wrangler deploy --config dist/server/wrangler.demo.json`
+- **New migrations:** apply them with `wrangler d1 execute markforth-portal-demo --remote --file drizzle/<file>.sql`.

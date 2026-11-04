@@ -58,7 +58,7 @@ function useLogout(){
 
 export function LogoutButton({authSource,className='mf-logout'}:{authSource:string;className?:string}){
   const {busy,logout}=useLogout();
-  if(authSource!=='supabase')return <a className={className} href={OWNER_SIGNOUT} target="_top" onClick={()=>broadcastLogout('logout')}><LogOut size={17} aria-hidden="true"/>Log out</a>;
+  if(authSource==='chatgpt')return <a className={className} href={OWNER_SIGNOUT} target="_top" onClick={()=>broadcastLogout('logout')}><LogOut size={17} aria-hidden="true"/>Log out</a>;
   return <button type="button" className={className} onClick={logout} disabled={busy}><LogOut size={17} aria-hidden="true"/>{busy?'Logging out…':'Log out'}</button>;
 }
 
@@ -118,7 +118,7 @@ function UserMenu({member,admin,authSource,photoUrl,onEditProfile,onChangePasswo
       <DropdownMenuItem className="mf-menu-item" onSelect={onChangePassword}><KeyRound aria-hidden="true"/>Change password</DropdownMenuItem>
       {!admin&&<DropdownMenuItem className="mf-menu-item" onSelect={()=>window.dispatchEvent(new Event(TOUR_EVENT))}><Sparkles aria-hidden="true"/>Take the tour again</DropdownMenuItem>}
       <DropdownMenuSeparator/>
-      {authSource==='supabase'
+      {authSource!=='chatgpt'
         ?<DropdownMenuItem className="mf-menu-item mf-menu-item--logout" disabled={busy} onSelect={e=>{e.preventDefault();void logout();}}><LogOut aria-hidden="true"/>{busy?'Logging out…':'Log out'}</DropdownMenuItem>
         :<DropdownMenuItem className="mf-menu-item mf-menu-item--logout" asChild><a href={OWNER_SIGNOUT} target="_top" onClick={()=>broadcastLogout('logout')}><LogOut aria-hidden="true"/>Log out</a></DropdownMenuItem>}
     </DropdownMenuContent>
@@ -130,6 +130,6 @@ export function TopBar(props:ShellProps){
   return <header className="mf-topbar">
     <MobileNav {...props}/>
     <p className="mf-crumb"><span>{group==='Admin'?'Admin tools':group}</span><ChevronRight size={14} aria-hidden="true"/><b>{props.tab}</b></p>
-    <div className="mf-topbar-end"><UserMenu {...props}/></div>
+    <div className="mf-topbar-end">{props.authSource==='demo'&&<span className="mf-demo-chip">Demo · sample data</span>}<UserMenu {...props}/></div>
   </header>;
 }

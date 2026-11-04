@@ -1111,3 +1111,12 @@ a.primary,a.secondary{display:inline-flex;align-items:center;justify-content:cen
   .top-ten-table td.rank-cell{position:absolute;top:14px;right:14px;width:auto;padding:0}
   .top-ten-table td.rank-cell::before{display:none}
 }
+
+/* ================= Demo copy (only shown when DEMO_MODE=1) ================= */
+.demo-box{display:grid;gap:12px;margin:0 0 22px;padding:16px 18px;border:1px dashed var(--red-line);border-radius:var(--radius-control);background:var(--red-tint)}
+.demo-box p{margin:0;font-size:14.5px;color:var(--ink-soft)}
+.demo-box b{color:var(--ink)}
+.demo-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.demo-actions .auth-submit,.demo-actions .secondary{min-height:48px;font-size:15px}
+.mf-demo-chip{display:inline-flex;align-items:center;min-height:30px;padding:0 12px;border-radius:var(--radius-pill);border:1px dashed var(--red-line);background:var(--red-tint);color:var(--red-ink);font-size:12.5px;font-weight:600;white-space:nowrap}
+@media (max-width:640px){.mf-demo-chip{display:none}.demo-actions{grid-template-columns:1fr}}

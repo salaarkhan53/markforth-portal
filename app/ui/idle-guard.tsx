@@ -21,12 +21,12 @@ export function IdleGuard({authSource}:{authSource:string}){
 
   function destination(reason:'idle'|'logout'){
     const login='/login?reason='+reason;
-    return authSource==='supabase'?login:'/signout-with-chatgpt?return_to='+encodeURIComponent(login);
+    return authSource!=='chatgpt'?login:'/signout-with-chatgpt?return_to='+encodeURIComponent(login);
   }
   async function end(reason:'idle'|'logout',tellOthers=true){
     if(ending.current)return;ending.current=true;
     if(tellOthers){channel.current?.postMessage({type:'logout',reason,from:TAB_ID});try{localStorage.setItem(STORE_LOGOUT,reason+':'+Date.now());}catch{}}
-    if(authSource==='supabase'&&tellOthers){try{await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout'})});}catch{}}
+    if(authSource!=='chatgpt'&&tellOthers){try{await fetch('/api/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout'})});}catch{}}
     window.location.assign(destination(reason));
   }
   async function heartbeat(){
