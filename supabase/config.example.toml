@@ -1,0 +1,3 @@
+# Fragment only. Keep verified-JWT protection enabled.
+[functions.markforth-auth-bridge]
+verify_jwt = true

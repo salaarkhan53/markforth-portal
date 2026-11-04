@@ -1,0 +1,218 @@
+{
+  "columns": [
+    {
+      "table_schema": "public",
+      "table_name": "markforth_auth_directory",
+      "column_name": "email",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "markforth_auth_directory",
+      "column_name": "auth_user_id",
+      "data_type": "uuid",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "markforth_auth_directory",
+      "column_name": "created_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "markforth_auth_directory",
+      "column_name": "role",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": "'agent'::text"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "markforth_auth_directory",
+      "column_name": "active",
+      "data_type": "boolean",
+      "is_nullable": "NO",
+      "column_default": "true"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "markforth_auth_directory",
+      "column_name": "must_change_password",
+      "data_type": "boolean",
+      "is_nullable": "NO",
+      "column_default": "false"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "markforth_bridge_config",
+      "column_name": "id",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "markforth_bridge_config",
+      "column_name": "secret_hash",
+      "data_type": "text",
+      "is_nullable": "NO",
+      "column_default": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "markforth_bridge_config",
+      "column_name": "smtp_cipher",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    },
+    {
+      "table_schema": "public",
+      "table_name": "markforth_bridge_config",
+      "column_name": "updated_at",
+      "data_type": "timestamp with time zone",
+      "is_nullable": "NO",
+      "column_default": "now()"
+    },
+    {
+      "table_schema": "public",
+      "table_name": "markforth_bridge_config",
+      "column_name": "owner_setup_hash",
+      "data_type": "text",
+      "is_nullable": "YES",
+      "column_default": null
+    }
+  ],
+  "objects": [
+    {
+      "kind": "constraint",
+      "schema_name": "public",
+      "object_name": "markforth_auth_directory",
+      "name": "markforth_auth_directory_auth_user_id_fkey",
+      "definition": "FOREIGN KEY (auth_user_id) REFERENCES auth.users(id) ON DELETE CASCADE"
+    },
+    {
+      "kind": "constraint",
+      "schema_name": "public",
+      "object_name": "markforth_auth_directory",
+      "name": "markforth_auth_directory_auth_user_id_key",
+      "definition": "UNIQUE (auth_user_id)"
+    },
+    {
+      "kind": "constraint",
+      "schema_name": "public",
+      "object_name": "markforth_auth_directory",
+      "name": "markforth_auth_directory_pkey",
+      "definition": "PRIMARY KEY (email)"
+    },
+    {
+      "kind": "constraint",
+      "schema_name": "public",
+      "object_name": "markforth_auth_directory",
+      "name": "markforth_auth_directory_role_check",
+      "definition": "CHECK (role = ANY (ARRAY['admin'::text, 'agent'::text]))"
+    },
+    {
+      "kind": "constraint",
+      "schema_name": "public",
+      "object_name": "markforth_bridge_config",
+      "name": "markforth_bridge_config_id_check",
+      "definition": "CHECK (id = 'portal'::text)"
+    },
+    {
+      "kind": "constraint",
+      "schema_name": "public",
+      "object_name": "markforth_bridge_config",
+      "name": "markforth_bridge_config_pkey",
+      "definition": "PRIMARY KEY (id)"
+    },
+    {
+      "kind": "rls",
+      "schema_name": "public",
+      "object_name": "markforth_auth_directory",
+      "name": "enabled",
+      "definition": "true"
+    },
+    {
+      "kind": "rls",
+      "schema_name": "public",
+      "object_name": "markforth_bridge_config",
+      "name": "enabled",
+      "definition": "true"
+    },
+    {
+      "kind": "function",
+      "schema_name": "public",
+      "object_name": "markforth_register_confirmed_owner",
+      "name": "markforth_register_confirmed_owner",
+      "definition": "CREATE OR REPLACE FUNCTION public.markforth_register_confirmed_owner()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$ declare expected_hash text; supplied_hash text; begin if lower(new.email) = 'mrintellectual777@gmail.com' and new.email_confirmed_at is not null then select owner_setup_hash into expected_hash from public.markforth_bridge_config where id='portal'; supplied_hash:=pg_catalog.encode(pg_catalog.sha256(pg_catalog.convert_to(coalesce(new.raw_user_meta_data->>'markforth_owner_registration',''),'UTF8')),'hex'); if expected_hash is not null and supplied_hash=expected_hash then insert into public.markforth_auth_directory(email,auth_user_id,role,active) values (lower(new.email),new.id,'admin',true) on conflict (email) do update set auth_user_id=excluded.auth_user_id,role='admin',active=true; update auth.users set raw_app_meta_data=coalesce(raw_app_meta_data,'{}'::jsonb)||'{\"markforth_portal\":true}'::jsonb,raw_user_meta_data=coalesce(raw_user_meta_data,'{}'::jsonb)-'markforth_owner_registration' where id=new.id; update public.markforth_bridge_config set owner_setup_hash=null where id='portal'; end if; end if; return new; end; $function$\n"
+    },
+    {
+      "kind": "function",
+      "schema_name": "public",
+      "object_name": "markforth_password_changed",
+      "name": "markforth_password_changed",
+      "definition": "CREATE OR REPLACE FUNCTION public.markforth_password_changed()\n RETURNS trigger\n LANGUAGE plpgsql\n SECURITY DEFINER\n SET search_path TO ''\nAS $function$ begin if old.encrypted_password is distinct from new.encrypted_password then update public.markforth_auth_directory set must_change_password=false where auth_user_id=new.id; end if; return new; end; $function$\n"
+    },
+    {
+      "kind": "trigger",
+      "schema_name": "auth",
+      "object_name": "users",
+      "name": "markforth_confirmed_owner",
+      "definition": "CREATE TRIGGER markforth_confirmed_owner AFTER INSERT OR UPDATE OF email_confirmed_at ON auth.users FOR EACH ROW EXECUTE FUNCTION markforth_register_confirmed_owner()"
+    },
+    {
+      "kind": "trigger",
+      "schema_name": "auth",
+      "object_name": "users",
+      "name": "markforth_password_changed",
+      "definition": "CREATE TRIGGER markforth_password_changed AFTER UPDATE OF encrypted_password ON auth.users FOR EACH ROW EXECUTE FUNCTION markforth_password_changed()"
+    },
+    {
+      "kind": "grant",
+      "schema_name": "public",
+      "object_name": "markforth_auth_directory",
+      "name": "postgres",
+      "definition": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE"
+    },
+    {
+      "kind": "grant",
+      "schema_name": "public",
+      "object_name": "markforth_auth_directory",
+      "name": "service_role",
+      "definition": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE"
+    },
+    {
+      "kind": "grant",
+      "schema_name": "public",
+      "object_name": "markforth_bridge_config",
+      "name": "postgres",
+      "definition": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE"
+    },
+    {
+      "kind": "grant",
+      "schema_name": "public",
+      "object_name": "markforth_bridge_config",
+      "name": "service_role",
+      "definition": "DELETE, INSERT, REFERENCES, SELECT, TRIGGER, TRUNCATE, UPDATE"
+    }
+  ],
+  "functionPrivileges": [
+    {
+      "schema_name": "public",
+      "proname": "markforth_register_confirmed_owner",
+      "privileges": "{postgres=X/postgres,service_role=X/postgres}"
+    },
+    {
+      "schema_name": "public",
+      "proname": "markforth_password_changed",
+      "privileges": "{postgres=X/postgres,service_role=X/postgres}"
+    }
+  ]
+}

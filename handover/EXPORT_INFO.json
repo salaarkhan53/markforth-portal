@@ -1,0 +1,29 @@
+{
+  "site_project_id": "appgprj_6ae7e4d103ec8191a7187783e578fdd7",
+  "published_version": 13,
+  "source_commit": "e7eb97481917a72d5cd87919d6fc6ab1adc00632",
+  "custom_domain": "https://agents.markforthsol.com/",
+  "supabase_project_ref": "himrllyhqktiljccafvl",
+  "edge_function": "markforth-auth-bridge",
+  "edge_function_version": 6,
+  "edge_verify_jwt": true,
+  "live_edge_source_matches_repository": true,
+  "contains_live_data": false,
+  "contains_secret_values": false,
+  "excluded": [
+    "git history and authentication configuration",
+    "node_modules and build outputs",
+    "runtime caches and local databases",
+    "production D1 records",
+    "R2 uploaded files",
+    "Supabase Auth user records",
+    "SMTP ciphertext and secret/setup hashes",
+    "environment secret values"
+  ],
+  "auth_schema_snapshot": "schema metadata only; no data rows",
+  "notes": [
+    "Repository source unchanged.",
+    "Handover docs and schema-only reference added to export only.",
+    "No deployment or database write performed."
+  ]
+}

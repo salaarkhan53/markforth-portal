@@ -1,0 +1,8 @@
+import {portalIdentity} from '../../../lib/portal-auth';
+import {getDb} from '../../../db';
+import {members,notificationReads,bonusChallenges,bonusAwards} from '../../../db/schema';
+import {eq} from 'drizzle-orm';
+import {powerSnapshot} from '../../../lib/power';
+export async function GET(){const user=await portalIdentity();if(!user)return new Response(null,{status:401});const db=getDb(),m=await db.select().from(members).where(eq(members.email,user.email.toLowerCase())).get();if(!m?.active||m.deletedAt||(user.source==='supabase'&&m.mustChangePassword))return new Response(null,{status:403});return Response.json(await powerSnapshot(db,m.email),{headers:{'Cache-Control':'no-store'}});}
+
+export async function POST(req:Request){if(req.headers.get('origin')!==new URL(req.url).origin)return new Response(null,{status:403});const user=await portalIdentity();if(!user)return new Response(null,{status:401});const db=getDb(),m=await db.select().from(members).where(eq(members.email,user.email.toLowerCase())).get();if(!m?.active||m.deletedAt||(user.source==='supabase'&&m.mustChangePassword))return new Response(null,{status:403});const b:any=await req.json();const id=String(b.notificationId||'');const kind=id.slice(0,2),key=id.slice(2);const found=kind==='c:'?await db.select().from(bonusChallenges).where(eq(bonusChallenges.id,key)).get():kind==='a:'?await db.select().from(bonusAwards).where(eq(bonusAwards.id,key)).get():null;if(!found)return Response.json({error:'Notification not found'},{status:404});await db.insert(notificationReads).values({id:m.email+'|'+id,email:m.email,notificationId:id,seenAt:new Date().toISOString()}).onConflictDoNothing();return Response.json({ok:true},{headers:{'Cache-Control':'no-store'}});}
