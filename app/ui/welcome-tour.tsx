@@ -5,9 +5,8 @@ import {IDLE_TIMEOUT_MS} from '@/lib/session-config';
 import {Sparkles,FilePlus,ListChecks,MessageSquare,LogOut,X,ArrowRight,ArrowLeft} from 'lucide-react';
 
 /* First-login tour for agents. Not shown to admins.
-   Remembered per user in this browser; the key uses a hash, not the email itself. */
+   Shown on an agent's first sign-in only; the server remembers that it was seen. */
 export const TOUR_EVENT='markforth-start-tour';
-function keyFor(email:string){let h=0x811c9dc5;for(const c of email.toLowerCase()){h^=c.charCodeAt(0);h=Math.imul(h,0x01000193)>>>0;}return 'mf-tour-v1:'+h.toString(16);}
 
 type Step={icon:LucideIcon;title:string;body:string;target?:string[]};
 const STEPS=(first:string):Step[]=>[
@@ -29,19 +28,20 @@ function highlight(names:string[]|undefined){
   }
 }
 
-export function WelcomeTour({name,email}:{name:string;email:string}){
+export function WelcomeTour({name,email,seen,onSeen}:{name:string;email:string;seen:boolean;onSeen:()=>void}){
   const [open,setOpen]=useState(false),[step,setStep]=useState(0);
   const titleRef=useRef<HTMLHeadingElement>(null),returnFocus=useRef<HTMLElement|null>(null);
   const steps=STEPS(name.split(' ')[0]||name),current=steps[step],Icon=current.icon,last=step===steps.length-1;
 
-  useEffect(()=>{let seen=true;try{seen=!!localStorage.getItem(keyFor(email));}catch{}if(!seen){const t=setTimeout(()=>start(),600);return()=>clearTimeout(t);}},[email]);
+  /* Shown once per person (remembered on the server), only on their first sign-in. */
+  useEffect(()=>{if(seen)return;const t=setTimeout(()=>start(),600);return()=>clearTimeout(t);},[email]);
   useEffect(()=>{const replay=()=>start();window.addEventListener(TOUR_EVENT,replay);return()=>window.removeEventListener(TOUR_EVENT,replay);},[]);
   useEffect(()=>{if(!open)return;highlight(current.target);titleRef.current?.focus({preventScroll:true});},[open,step]);
   useEffect(()=>{if(!open)return;const key=(e:KeyboardEvent)=>{if(e.key==='Escape'){e.preventDefault();finish();}};document.addEventListener('keydown',key);return()=>document.removeEventListener('keydown',key);},[open]);
   useEffect(()=>()=>highlight(undefined),[]);
 
   function start(){returnFocus.current=document.activeElement as HTMLElement|null;setStep(0);setOpen(true);}
-  function finish(){try{localStorage.setItem(keyFor(email),String(Date.now()));}catch{}setOpen(false);highlight(undefined);const t=returnFocus.current;if(t&&t.isConnected&&t!==document.body)t.focus();else document.getElementById('page-title')?.focus({preventScroll:true});}
+  function finish(){if(!seen)onSeen();setOpen(false);highlight(undefined);const t=returnFocus.current;if(t&&t.isConnected&&t!==document.body)t.focus();else document.getElementById('page-title')?.focus({preventScroll:true});}
 
   if(!open)return null;
   return <section className="tour-card" role="dialog" aria-modal="false" aria-labelledby="tour-title" aria-describedby="tour-body">

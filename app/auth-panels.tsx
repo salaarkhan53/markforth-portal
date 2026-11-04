@@ -4,6 +4,7 @@ import type {ReactNode} from 'react';
 import type {LucideIcon} from 'lucide-react';
 import {ArrowRight,ArrowLeft,Mail,LockKeyhole,Eye,EyeOff,Info,CircleAlert,CircleCheck,Check,Circle,LoaderCircle,ShieldCheck,UsersRound,Clock3} from 'lucide-react';
 import {LogoutButton} from './ui/app-shell';
+import {EmblemArt,Slashes} from './ui/emblem-art';
 import {IDLE_TIMEOUT_MS} from '@/lib/session-config';
 const IDLE_MINUTES=Math.round(IDLE_TIMEOUT_MS/60000);
 
@@ -44,20 +45,29 @@ function SubmitButton({busy,busyLabel,children}:{busy:boolean;busyLabel:string;c
 }
 
 function BrandPanel(){
+  const words=['Move','business'];
   return <section className="auth-story" aria-hidden="true">
     <div className="auth-grid-lines"/>
+    <span className="auth-blob a"/><span className="auth-blob b"/><span className="auth-blob c"/>
+    <Slashes className="auth-slashes"/>
+    <EmblemArt className="auth-emblem"/>
     <img className="auth-story-logo" src="/brand/markforth-logo-onblack.png" width="190" height="40" alt=""/>
     <div className="auth-story-copy">
       <span className="auth-pill"><i/>Agent workspace</span>
-      <p className="auth-word">Move business <span>forward.</span></p>
+      <p className="auth-word">{words.map((w,i)=><span key={w}><span className="w" style={{animationDelay:(0.15+i*0.12)+'s'}}>{w}</span>{' '}</span>)}<span className="w accent" style={{animationDelay:'0.39s'}}>forward.</span></p>
       <p className="auth-story-lede">Submit leads, follow every decision and see your team’s results in one place.</p>
     </div>
     <ul className="auth-trust">
-      <li><UsersRound size={17}/>An individual login for every agent</li>
-      <li><ShieldCheck size={17}/>Customer details stay private to your team</li>
-      <li><Clock3 size={17}/>Reporting in US Eastern time</li>
+      <li style={{animationDelay:'0.7s'}}><UsersRound size={17}/>An individual login for every agent</li>
+      <li style={{animationDelay:'0.8s'}}><ShieldCheck size={17}/>Customer details stay private to your team</li>
+      <li style={{animationDelay:'0.9s'}}><Clock3 size={17}/>Reporting in US Eastern time</li>
     </ul>
   </section>;
+}
+
+/* Phones: a compact animated brand strip above the form. */
+function MobileBrand(){
+  return <div className="auth-mobile-brand" aria-hidden="true"><span className="auth-blob a"/><Slashes className="auth-slashes"/><EmblemArt className="auth-mobile-emblem"/><img src="/brand/markforth-logo-onblack.png" width="160" height="34" alt=""/></div>;
 }
 
 /* ---------- Sign in / forgot password ---------- */
@@ -92,7 +102,8 @@ export function AuthPanel(){
   return <div className="auth-shell">
     <BrandPanel/>
     <main className="auth-main">
-      <div className="auth-card">
+      <MobileBrand/>
+      <div className="auth-card auth-card-enter">
         <img className="auth-logo" src="/brand/markforth-logo.png" width="180" height="36" alt="Markforth"/>
         <p className="auth-eyebrow">Markforth agent portal</p>
         <h1>{forgot?'Reset your password':'Welcome back'}</h1>

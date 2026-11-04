@@ -39,6 +39,7 @@ export type ShellProps={
 };
 
 export function visibleNav(admin:boolean,authSource:string){return NAV.filter(i=>(!i.adminOnly||admin)&&(!i.passwordOnly||authSource==='supabase'));}
+export function navIcon(tab:string):LucideIcon{return NAV.find(i=>i.name===tab)?.icon||LayoutDashboard;}
 export function groupOf(tab:string){return NAV.find(i=>i.name===tab)?.group||'Work';}
 const initials=(name:string)=>name.split(' ').filter(Boolean).map(w=>w[0]).slice(0,2).join('').toUpperCase();
 const roleLabel=(admin:boolean)=>admin?'Administrator':'Agent';
@@ -82,10 +83,6 @@ function SidebarBody(props:ShellProps){
   return <>
     <div className="mf-brand"><img src="/brand/markforth-logo-onblack.png" width="150" height="32" alt="Markforth"/><span>Agent workspace</span></div>
     <NavList {...props}/>
-    <div className="mf-sidebar-foot">
-      <div className="mf-user"><Avatar name={props.member.name} photoUrl={props.photoUrl}/><div><b>{props.member.name}</b><small>{roleLabel(props.admin)}</small></div></div>
-      <LogoutButton authSource={props.authSource}/>
-    </div>
   </>;
 }
 
@@ -99,7 +96,7 @@ function MobileNav(props:ShellProps){
     <SheetContent side="left" className="mf-sheet data-[state=open]:duration-300 data-[state=closed]:duration-200"
       onCloseAutoFocus={e=>{if(!picked.current)return;picked.current=false;e.preventDefault();document.getElementById('page-title')?.focus({preventScroll:true});}}>
       <SheetTitle className="visually-hidden">Portal menu</SheetTitle>
-      <SheetDescription className="visually-hidden">Choose a section or log out.</SheetDescription>
+      <SheetDescription className="visually-hidden">Choose a section of the portal.</SheetDescription>
       <div className="mf-sidebar mf-sidebar--sheet"><SidebarBody {...props} onNavigate={t=>{picked.current=true;setOpen(false);props.onNavigate(t);}}/></div>
     </SheetContent>
   </Sheet>;
