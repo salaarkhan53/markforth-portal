@@ -201,3 +201,11 @@ The selected conversation polls every five seconds while visible; workspace-wide
 ### Bulk lead review
 
 Admins can select individual active leads or the first 100 filtered leads in Lead pipeline, then mark the selection as Sale (CPA/CPL), Rejected, or Pending with one click. Rejections require a shared reason. Changing filters clears selection; deleted leads cannot be bulk-reviewed. The server validates the full selection before writing, groups updates and the audit record in one D1 batch, records reviewer/time, and recalculates power-hour awards once.
+
+### Employee onboarding
+
+Administrator-only workspace at `/onboarding`, linked from the portal sidebar. Track employee contact and employment details, joining stages, editable checklists, and internal notes. Records are independent from portal account provisioning; optional roster autofill copies only name and email. Archive/restore retains records and letter history. Directory CSV export escapes spreadsheet formula prefixes.
+
+Company settings control the legal name, office/contact details, authorized signatory and reusable appointment terms. Review these details before use. The letter studio requires designation, joining date, monthly base salary, working hours/location, date and signatory, then saves an immutable snapshot with a unique reference and idempotent request key. Print the A4 letter or use the browser's Save as PDF. Signatures are completed separately; generating a letter neither emails it nor creates an employment decision. Later edits do not change previously generated letters.
+
+Private employee documents (10 MB each) use R2 behind administrator-authenticated forced-download endpoints. All reads, writes and letter/file downloads require an active administrator without a pending forced password change. Mutations validate origin, rate limits, lengths and optimistic record revision; stale updates return 409. D1 migration 0010 adds three tables without modifying existing business records. `node tests/onboarding.test.mjs` exercises actual routes with isolated SQLite/mock storage, authorization, conflicts, snapshots and uploads.
