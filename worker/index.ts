@@ -23,8 +23,29 @@ const worker = {
         },
       };
     }
-    return runWithConnectorBinding(binding, () => handler.fetch(request, env, ctx));
+    return runWithConnectorBinding(binding, () => handler.fetch(request, env, ctx)).then(withSecurityHeaders);
   },
 };
+
+// Security headers on every response. A route that sets its own value (for example the
+// sandboxed chat-file download) keeps it. Framing is limited to the portal itself and the
+// ChatGPT Sites host, so other websites cannot load the portal inside a hidden frame.
+const SECURITY_HEADERS: Record<string, string> = {
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+  "X-Content-Type-Options": "nosniff",
+  "Content-Security-Policy": "frame-ancestors 'self' https://chatgpt.com https://*.chatgpt.com https://*.chatgpt.site; object-src 'none'; base-uri 'self'",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()",
+};
+
+function withSecurityHeaders(response: Response): Response {
+  if (response.status === 101) return response; // websocket upgrades pass through untouched
+  const secured = new Response(response.body, response);
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+    if (!secured.headers.has(name)) secured.headers.set(name, value);
+  }
+  secured.headers.delete("X-Powered-By");
+  return secured;
+}
 
 export default worker;
