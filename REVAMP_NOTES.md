@@ -4,7 +4,7 @@ This build restyles the portal to match markforthsol.com, makes it easier for fi
 
 ## Before you deploy
 
-1. **Apply migrations `drizzle/0010_volatile_fat_cobra.sql` and `drizzle/0011_awesome_cardiac.sql`** to the production D1 database, in that order. They add two nullable columns: `auth_sessions.last_activity_at` and `members.dob`. Earlier migrations are untouched.
+1. **Apply migration `drizzle/0011_idle_logout_and_dob.sql`** to the production D1 database. It adds two nullable columns: `auth_sessions.last_activity_at` and `members.dob`. Migration `0010_slippery_scarlet_spider.sql` (employee onboarding, from version 14) is already applied in production and is unchanged.
 2. **Everyone signs in once more.** Existing sessions have no activity timestamp, so the server treats them as expired. This is intentional.
 3. **Do not set `DEMO_MODE`** on the live portal.
 4. Run the usual checks: `pnpm exec tsc --noEmit`, every file in `tests/`, and `pnpm run build`.

@@ -3,7 +3,7 @@ import {useRef,useState} from 'react';
 import type {LucideIcon} from 'lucide-react';
 import {TOUR_EVENT} from './welcome-tour';
 import {broadcastLogout} from './idle-guard';
-import {Sparkles,LayoutDashboard,FilePlus,ListChecks,ChartNoAxesColumn,Trophy,MessageSquare,Zap,KeyRound,Users,Upload,PhoneCall,PhoneForwarded,Mail,LogOut,Menu,ChevronDown,ChevronRight,UserPen} from 'lucide-react';
+import {Sparkles,LayoutDashboard,FilePlus,ListChecks,ChartNoAxesColumn,Trophy,MessageSquare,Zap,KeyRound,Users,Upload,PhoneCall,PhoneForwarded,Mail,LogOut,Menu,ChevronDown,ChevronRight,UserPen,ClipboardCheck,ArrowUpRight} from 'lucide-react';
 import {Sheet,SheetTrigger,SheetContent,SheetTitle,SheetDescription} from '@/components/ui/sheet';
 import {DropdownMenu,DropdownMenuTrigger,DropdownMenuContent,DropdownMenuLabel,DropdownMenuItem,DropdownMenuSeparator} from '@/components/ui/dropdown-menu';
 
@@ -74,7 +74,8 @@ function NavList({tab,onNavigate,admin,authSource,counts}:ShellProps){
         return <li key={name}><button type="button" className={'mf-nav-item'+(active?' is-active':'')} aria-current={active?'page':undefined} onClick={()=>onNavigate(name)}>
           <Icon size={18} aria-hidden="true"/><span>{name}</span>
           {count>0&&<span className="mf-count">{count>99?'99+':count}<span className="visually-hidden">{name==='Team chat'?' unread messages':' leads awaiting review'}</span></span>}
-        </button></li>;})}</ul>
+        </button></li>;})}
+        {group==='Admin'&&admin&&<li><a className="mf-nav-item mf-nav-item--page" href="/onboarding"><ClipboardCheck size={18} aria-hidden="true"/><span>Employee onboarding</span><ArrowUpRight size={14} className="mf-nav-out" aria-hidden="true"/></a></li>}</ul>
     </div>;})}
   </nav>;
 }

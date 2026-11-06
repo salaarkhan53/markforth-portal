@@ -1,1 +1,0 @@
-ALTER TABLE `auth_sessions` ADD `last_activity_at` integer;
