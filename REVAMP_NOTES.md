@@ -1,12 +1,13 @@
 # Agent portal revamp: what changed and how to deploy
 
-This build restyles the portal to match markforthsol.com, makes it easier for first-time users, and adds a 10-minute inactivity logout that the server enforces. Business logic, permissions, the origin check, throttling, the Supabase flow, email delivery and data handling are unchanged. The only API additions are the inactivity `heartbeat`, the self-service `profile` action and the current-password check (see below). No dependencies were added or upgraded.
+This build restyles the portal to match markforthsol.com, makes it easier for first-time users, and adds a 10-minute inactivity logout that the server enforces. Business logic, permissions, the origin check, throttling, the Supabase flow, email delivery and data handling are unchanged. The only API additions are the inactivity `heartbeat`, the self-service `profile` action and the current-password check (see below). The security pass of 7 November 2026 then updated dependencies (Next.js 16.4.3, React 19.2.9, Vite 8.3.5, Wrangler 4.156.0, with fixed versions pinned in `pnpm-workspace.yaml`), removed two unused packages and added security headers in `worker/index.ts`.
 
 ## Before you deploy
 
 1. **Apply migrations `drizzle/0010_volatile_fat_cobra.sql` and `drizzle/0011_awesome_cardiac.sql`** to the production D1 database, in that order. They add two nullable columns: `auth_sessions.last_activity_at` and `members.dob`. Earlier migrations are untouched.
 2. **Everyone signs in once more.** Existing sessions have no activity timestamp, so the server treats them as expired. This is intentional.
-3. Run the usual checks: `pnpm exec tsc --noEmit`, every file in `tests/`, and `pnpm run build`.
+3. **Do not set `DEMO_MODE`** on the live portal.
+4. Run the usual checks: `pnpm exec tsc --noEmit`, every file in `tests/`, and `pnpm run build`.
 
 ## Inactivity logout
 
